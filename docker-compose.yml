@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
   pgadmin:
-    depends_on: ["postgresql"]
+    depends_on: 
+      - postgresql
     image: dpage/pgadmin4
     container_name: pgadmin
     environment:
@@ -10,16 +11,19 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.admin
       - PGADMIN_DEFAULT_PASSWORD=student
     user: root
-    ports: ["8888:80"]
-    volumes: ["pgadmin-data:/var/lib/pgadmin"]
+    ports: 
+      - "8888:80"
+    volumes: 
+      - pgadmin-data:/var/lib/pgadmin
 
   postgresql:
     image: postgres:latest
-    env_file: ".env"
-    ports: ["${POSTGRES_PORT}:${POSTGRES_PORT}"]
-    volumes:
-      - postgres-db
-      # - ./database/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file: .env
+    ports: 
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes: 
+      - postgres-db:/var/lib/postgresql/data
+      - ./database/init/schema.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U student -d supermarket"]
       interval: 5s
