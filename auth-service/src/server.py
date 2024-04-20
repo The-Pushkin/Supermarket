@@ -14,7 +14,7 @@ jwt_token_timeout = 30  # minutes
 users = [
     {
         "username": "admin",
-        "password": generate_password_hash("admin123"),
+        "password": generate_password_hash("admin"),
         "role": "admin",
     },
     {

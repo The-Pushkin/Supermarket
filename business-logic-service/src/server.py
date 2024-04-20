@@ -69,7 +69,7 @@ def insert_user_safe(name, password, role):
 # Updates the stock of a product by a specific increment.
 def update_product_stock(product_name, increment):
     try:
-        product = Product.get(Product.product_id == product_id)
+        product = Product.get(Product.product_name == product_name)
         query = Product.update(product_stock=Product.product_stock + increment).where(Product.product_name == product_name)
         query.execute()
         return None
@@ -107,7 +107,7 @@ def select_users():
 
 @app.route('/add-product', methods=['POST'])
 def route_add_product():
-    data = request.get_json()
+    data = request.json
     
     if not data or 'product_name' not in data or 'product_price' not in data or 'product_stock' not in data:
         return jsonify({'error': 'Missing product details'}), 400
@@ -123,7 +123,7 @@ def route_add_product():
 
 @app.route('/add-user', methods=['POST'])
 def route_add_user():
-    data = request.get_json()
+    data = request.json
     
     if not data or 'user_name' not in data or 'user_password' not in data or 'user_role' not in data:
         return jsonify({'error': 'Missing user details'}), 400
@@ -139,12 +139,12 @@ def route_add_user():
 
 @app.route('/update-stock', methods=['PUT'])
 def route_update_stock():
-    data = request.get_json()
+    data = request.json
     
-    if not data or 'product_name' not in data:
-        return jsonify({'error': 'Missing product name'}), 400
+    if not data or 'product_name' not in data or 'increment' not in data:
+        return jsonify({'error': 'Missing product details'}), 400
 
-    result = update_product_stock(data['product_name'])
+    result = update_product_stock(data['product_name'], data['increment'])
     if isinstance(result, Exception):
         return jsonify({'error': str(result)}), 500
     
@@ -154,7 +154,7 @@ def route_update_stock():
 
 @app.route('/get-product', methods=['GET'])
 def route_get_product():
-    data = request.get_json()
+    data = request.json
     
     if not data or 'product_name' not in data:
         return jsonify({'error': 'Missing product name'}), 400
@@ -172,7 +172,7 @@ def route_get_product():
 
 @app.route('/get-user', methods=['GET'])
 def route_get_user():
-    data = request.get_json()
+    data = request.json
     
     if not data or 'user_name' not in data:
         return jsonify({'error': 'Missing user name'}), 400
