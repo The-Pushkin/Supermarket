@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'Harambe_is_love_Harambe_is_life'
 
-db_api_url = 'http://localhost:5010/'
+db_api_url = 'http://database_api_service:5010/'
 headers={
     'Content-type':'application/json', 
     'Accept':'application/json'

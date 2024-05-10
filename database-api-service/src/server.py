@@ -12,7 +12,7 @@ db = PostgresqlDatabase(
     'supermarket',  # Database name
     user='student',
     password='student',
-    host='localhost',
+    host='postgresql',
     port=5432
 )
 

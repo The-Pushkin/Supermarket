@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = 'tH15_1s_Wh4T_Th3_3Dg3_0f_Y0uR_534T_W4s_mAd3_0f'
 jwt_token_timeout = 30  # minutes
 
 def get_user(username):
-    url = "http://bussines_logic_service:5000/get-user"
+    url = "http://127.0.0.1:5000/get-user"
     json = {"user_name": username}
     headers={
         'Content-type':'application/json', 
