@@ -1,7 +1,7 @@
 import requests
 
 def test_request(path, test_name, json, request_type):
-    url = "http://127.0.0.1:5000" + path
+    url = "http://127.0.0.1:5010" + path
     headers={
         'Content-type':'application/json', 
         'Accept':'application/json'
@@ -18,19 +18,17 @@ def test_request(path, test_name, json, request_type):
     except requests.exceptions.RequestException as e:
         print(f"{test_name} exception:\n{e}\n")
 
-requests.post("http://127.0.0.1:5010/clear-db",
-    headers={
-        'Content-type':'application/json', 
-        'Accept':'application/json'
-    },
-    data={},
-    json={}
+test_request(
+    "/clear-db",
+    "test_clear_db",
+    {},
+    "POST"
 )
 
-# add-product
+# insert-product
 test_request(
-    "/add-product",
-    "test_add_product_success",
+    "/insert-product",
+    "test_insert_product_success",
     {
         "product_name": "Castravete Fabio",
         "product_price": 3.99,
@@ -39,8 +37,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-product",
-    "test_add_product_fail_already_exists",
+    "/insert-product",
+    "test_insert_product_fail_already_exists",
     {
         "product_name": "Castravete Fabio",
         "product_price": 12.2,
@@ -49,8 +47,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-product",
-    "test_add_product_fail_missing_name",
+    "/insert-product",
+    "test_insert_product_fail_missing_name",
     {
         "product_price": 1.99,
         "product_stock": 100
@@ -58,8 +56,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-product",
-    "test_add_product_fail_missing_price",
+    "/insert-product",
+    "test_insert_product_fail_missing_price",
     {
         "product_name": "Mere Golden",
         "product_stock": 100
@@ -67,8 +65,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-product",
-    "test_add_product_fail_missing_stock",
+    "/insert-product",
+    "test_insert_product_fail_missing_stock",
     {
         "product_name": "Mere Florina",
         "product_price": 1.99
@@ -76,10 +74,10 @@ test_request(
     "POST"
 )
 
-# add-user
+# insert-user
 test_request(
-    "/add-user",
-    "test_add_user_success",
+    "/insert-user",
+    "test_insert_user_success",
     {
         "user_name": "user",
         "user_password": 3.99,
@@ -88,8 +86,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-user",
-    "test_add_user_fail_already_exists",
+    "/insert-user",
+    "test_insert_user_fail_already_exists",
     {
         "user_name": "user",
         "user_password": 12.2,
@@ -98,8 +96,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-user",
-    "test_add_user_fail_missing_name",
+    "/insert-user",
+    "test_insert_user_fail_missing_name",
     {
         "user_password": 1.99,
         "user_role": "restock"
@@ -107,8 +105,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-user",
-    "test_add_user_fail_missing_password",
+    "/insert-user",
+    "test_insert_user_fail_missing_password",
     {
         "user_name": "ana",
         "user_role": "restock"
@@ -116,8 +114,8 @@ test_request(
     "POST"
 )
 test_request(
-    "/add-user",
-    "test_add_user_fail_missing_role",
+    "/insert-user",
+    "test_insert_user_fail_missing_role",
     {
         "user_name": "oana",
         "user_password": 1.99
@@ -125,102 +123,102 @@ test_request(
     "POST"
 )
 
-# update-stock
+# update-product-stock
 test_request(
-    "/update-stock",
-    "test_update_stock_success",
+    "/update-product-stock",
+    "test_update_product_stock_success",
     {
         "product_name": "Castravete Fabio",
-        "increment": 10
+        "new_stock": 10
     },
     "PUT"
 )
 test_request(
-    "/update-stock",
-    "test_update_stock_fail_not_found",
+    "/update-product-stock",
+    "test_update_product_stock_fail_not_found",
     {
         "product_name": "Branza de capra",
-        "increment": 10
+        "new_stock": 10
     },
     "PUT"
 )
 test_request(
-    "/update-stock",
-    "test_update_stock_fail_missing_name",
+    "/update-product-stock",
+    "test_update_product_stock_fail_missing_name",
     {
-        "increment": 10
+        "new_stock": 10
     },
     "PUT"
 )
 test_request(
-    "/update-stock",
-    "test_update_stock_fail_missing_increment",
+    "/update-product-stock",
+    "test_update_product_stock_fail_missing_new_stock",
     {
         "product_name": "Mere Golden"
     },
     "PUT"
 )
 
-# get-product
+# select-product
 test_request(
-    "/get-product",
-    "test_get_product_success",
+    "/select-product",
+    "test_select_product_success",
     {
         "product_name": "Castravete Fabio"
     },
-    "GET"
+    "select"
 )
 test_request(
-    "/get-product",
-    "test_get_product_fail_not_found",
+    "/select-product",
+    "test_select_product_fail_not_found",
     {
         "product_name": "Branza de capra"
     },
-    "GET"
+    "select"
 )
 test_request(
-    "/get-product",
-    "test_get_product_fail_missing_name",
+    "/select-product",
+    "test_select_product_fail_missing_name",
     {},
-    "GET"
+    "select"
 )
 
-# get-user
+# select-user
 test_request(
-    "/get-user",
-    "test_get_user_success",
+    "/select-user",
+    "test_select_user_success",
     {
         "user_name": "user"
     },
-    "GET"
+    "select"
 )
 test_request(
-    "/get-user",
-    "test_get_user_fail_not_found",
+    "/select-user",
+    "test_select_user_fail_not_found",
     {
         "user_name": "ioana"
     },
-    "GET"
+    "select"
 )
 test_request(
-    "/get-user",
-    "test_get_user_fail_missing_name",
+    "/select-user",
+    "test_select_user_fail_missing_name",
     {},
-    "GET"
-)
-
-# all-products
-test_request(
-    "/all-products",
-    "test_all_products",
-    {},
-    "GET"
+    "select"
 )
 
-# all-users
+# select-products
 test_request(
-    "/all-users",
-    "test_all_users",
+    "/select-products",
+    "test_select_products",
     {},
-    "GET"
+    "select"
+)
+
+# select-users
+test_request(
+    "/select-users",
+    "test_select_users",
+    {},
+    "select"
 )
