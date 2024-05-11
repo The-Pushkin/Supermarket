@@ -86,12 +86,72 @@ services:
       - postgresql
     networks:
       - supermarket_network
+  
+  kong-database:
+    image: postgres:12
+    container_name: kong-database
+    networks:
+      - supermarket_network
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    volumes:
+      - kong-db:/var/lib/postgresql/data
+
+  kong:
+    image: kong:latest
+    container_name: kong
+    networks:
+      - supermarket_network
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ENABLED: true
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
+      KONG_PORTAL: on  # Enable the Developer Portal if needed
+      KONG_ADMIN_GUI_URL: http://100.118.139.109:8002  # URL where Kong Manager will be accessible
+      # KONG_ADMIN_GUI_API_URL: http://100.118.139.109:8001  # URL where Kong Manager will be accessible
+      KONG_ADMIN_GUI_LISTEN: '0.0.0.0:8002'
+    depends_on:
+      - kong-database
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+      - "8002:8002"
+    command: "kong docker-start"
+
+  kong-migration:
+    image: kong:latest
+    command: "kong migrations bootstrap"
+    networks:
+      - supermarket_network
+    restart: on-failure
+    environment:
+      - KONG_PG_HOST=kong-database
+      - KONG_PG_USER=kong
+      - KONG_PG_PASSWORD=kong
+    links:
+      - kong-database
+    depends_on:
+      - kong-database
+    profiles:
+      - donotstart
 
 volumes:
   postgres-db:
   pgadmin-data:
   grafana-data:
   portainer-data:
+  kong-db:
 
 networks:
   supermarket_network:
