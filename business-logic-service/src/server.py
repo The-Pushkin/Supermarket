@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, make_response
 import requests
+from loki_logger import LokiLogger
 
 port = 5000
 
@@ -13,9 +14,12 @@ headers={
     'Accept':'application/json'
 }
 
+logger = LokiLogger(service_name="business-logic-service").get_logger()
+
 # Adds a new product to the database.
 @app.route('/add-product', methods=['POST'])
 def route_add_product():
+    logger.info("[INFO] add-product call")
     data = request.json
     
     if not data or 'product_name' not in data or 'product_price' not in data or 'product_stock' not in data:
@@ -35,6 +39,7 @@ def route_add_product():
 # Adds a new user to the database.
 @app.route('/add-user', methods=['POST'])
 def route_add_user():
+    logger.info("[INFO] add-user call")
     data = request.json
     
     if not data or 'user_name' not in data or 'user_password' not in data or 'user_role' not in data:
@@ -53,6 +58,7 @@ def route_add_user():
 
 @app.route('/update-stock', methods=['PUT'])
 def route_update_stock():
+    logger.info("[INFO] update-stock call")
     data = request.json
     
     if not data or 'product_name' not in data or 'increment' not in data:
@@ -81,6 +87,7 @@ def route_update_stock():
 
 @app.route('/get-product', methods=['GET'])
 def route_get_product():
+    logger.info("[INFO] get-product call")
     data = request.json
     
     if not data or 'product_name' not in data:
@@ -101,6 +108,7 @@ def route_get_product():
 
 @app.route('/get-user', methods=['GET'])
 def route_get_user():
+    logger.info("[INFO] get-user call")
     data = request.json
     
     if not data or 'user_name' not in data:
@@ -121,6 +129,7 @@ def route_get_user():
 
 @app.route('/all-products', methods=['GET'])
 def route_all_products():
+    logger.info("[INFO] all-products call")
     response = requests.get(db_api_url + 'select-products', headers=headers)
     response_json = response.json()
     
@@ -130,6 +139,7 @@ def route_all_products():
 
 @app.route('/all-users', methods=['GET'])
 def route_all_users():
+    logger.info("[INFO] all-users call")
     response = requests.get(db_api_url + 'select-users', headers=headers)
     response_json = response.json()
     

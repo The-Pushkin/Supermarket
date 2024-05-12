@@ -1,12 +1,15 @@
 from flask import Flask, request, jsonify, make_response
 from peewee import PostgresqlDatabase, Model, IntegerField, CharField, FloatField, AutoField
 from werkzeug.security import generate_password_hash
+from loki_logger import LokiLogger
 
 port = 5010
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'B0B3R_CRwa'
+
+logger = LokiLogger(service_name="database-api-service").get_logger()
 
 db = PostgresqlDatabase(
     'supermarket',  # Database name
@@ -53,6 +56,7 @@ def initialize_db():
 # Inserts a new product into the database.
 @app.route('/insert-product', methods=['POST'])
 def insert_product():
+    logger.info("[INFO] insert-product call")
     data = request.json
     
     try:
@@ -67,7 +71,7 @@ def insert_product():
             'product_id': product.product_id
         }), 201
     except Exception as e:
-        print(f"[ERROR] Insert error: {e}")
+        logger.error(f"[ERROR] Insert error: {e}")
         return jsonify({
             'message': 'insert_fail',
             'error': str(e)
@@ -76,6 +80,7 @@ def insert_product():
 # Inserts a new user into the database.
 @app.route('/insert-user', methods=['POST'])
 def insert_user():
+    logger.info("[INFO] insert-user call")
     data = request.json
     
     try:
@@ -90,7 +95,7 @@ def insert_user():
             'user_id': user.user_id
         }), 201
     except Exception as e:
-        print(f"[ERROR] Insert error: {e}")
+        logger.error(f"[ERROR] Insert error: {e}")
         return jsonify({
             'message': 'insert_fail',
             'error': str(e)
@@ -99,6 +104,7 @@ def insert_user():
 # Updates the stock of a product by a specific increment.
 @app.route('/update-product-stock', methods=['PUT'])
 def update_product_stock():
+    logger.info("[INFO] update-product-stock call")
     data = request.json
     
     try:
@@ -109,7 +115,7 @@ def update_product_stock():
             'message': 'update_success'
         }), 201
     except Exception as e:
-        print(f"[ERROR] Update error: {e}")
+        logger.error(f"[ERROR] Update error: {e}")
         return jsonify({
             'message': 'update_fail',
             'error': str(e)
@@ -118,6 +124,7 @@ def update_product_stock():
 # Returns a product by its name.
 @app.route('/select-product', methods=['GET'])
 def select_product():
+    logger.info("[INFO] select-product call")
     data = request.json
     
     try:
@@ -131,7 +138,7 @@ def select_product():
             "product_stock": product.product_stock
         }), 201
     except Exception as e:
-        print(f"[ERROR] Select error: {e}")
+        logger.error(f"[ERROR] Select error: {e}")
         return jsonify({
             "message": "select_fail",
             "error": str(e)
@@ -140,6 +147,7 @@ def select_product():
 # Returns a user by its name.
 @app.route('/select-user', methods=['GET'])
 def select_user():
+    logger.info("[INFO] select-user call")
     data = request.json
     
     try:
@@ -153,7 +161,7 @@ def select_user():
             "user_role": user.user_role
         }), 201
     except Exception as e:
-        print(f"[ERROR] Select error: {e}")
+        logger.error(f"[ERROR] Select error: {e}")
         return jsonify({
             "message": "select_fail",
             "error": str(e)
@@ -162,6 +170,7 @@ def select_user():
 # Returns a list of all products in the DB.
 @app.route('/select-products', methods=['GET'])
 def select_products():
+    logger.info("[INFO] select-products call")
     products = list(Product.select())
     
     return jsonify({
@@ -177,6 +186,7 @@ def select_products():
 # Returns a list of all users in the DB.
 @app.route('/select-users', methods=['GET'])
 def select_users():
+    logger.info("[INFO] select-users call")
     users = list(User.select())
     
     return jsonify({
@@ -192,6 +202,7 @@ def select_users():
 # Clears the database.
 @app.route('/clear-db', methods=['POST'])
 def clear_db():
+    logger.info("[INFO] clear-db call")
     try:
         Product.delete().execute()
         User.delete().execute()
@@ -200,7 +211,7 @@ def clear_db():
             'message': 'clear_success'
         }), 201
     except Exception as e:
-        print(f"[ERROR] Delete error: {e}")
+        logger.error(f"[ERROR] Delete error: {e}")
         return jsonify({
             'message': 'clear_fail',
             'error': str(e)

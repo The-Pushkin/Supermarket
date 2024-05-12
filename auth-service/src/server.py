@@ -4,6 +4,8 @@ import requests
 from flask import Flask, request, jsonify, make_response
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
+from loki_logger import LokiLogger
+
 
 port = 5005
 
@@ -12,6 +14,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'tH15_1s_Wh4T_Th3_3Dg3_0f_Y0uR_534T_W4s_mAd3_0f'
 
 jwt_token_timeout = 30  # minutes
+
+logger = LokiLogger(service_name="auth-service").get_logger()
 
 def get_user(username):
     url = "http://bussines_logic_service:5000/get-user"
@@ -23,7 +27,7 @@ def get_user(username):
     
     response = requests.get(url, headers=headers, data={}, json=json)
     if response.status_code != 201:
-        print(f"[ERROR] (Status code: {response.status_code})\nResponse: {response.text}\n")
+        logger.error(f"[ERROR] (Status code: {response.status_code})\nResponse: {response.text}\n")
         return None
     return response.json()
 
@@ -50,6 +54,7 @@ def token_required(f):
 
 @app.route('/login', methods=['POST'])
 def login_user():
+    logger.info("[INFO] login call")
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:

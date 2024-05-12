@@ -34,6 +34,15 @@ services:
       timeout: 5s
       retries: 10
   
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-data:/loki
+    networks:
+      - supermarket_network
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -45,9 +54,11 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - postgresql
+      - loki
     networks:
       - supermarket_network
-  
+
+
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
@@ -61,7 +72,8 @@ services:
     restart: always
 
   auth_service:
-    build: ./auth-service/
+    image: thepushkin/auth_service
+    container_name: auth_service
     ports:
       - "5005:5005"
     depends_on:
@@ -70,7 +82,8 @@ services:
       - supermarket_network
   
   bussines_logic_service:
-    build: ./business-logic-service/
+    image: thepushkin/business_logic_service
+    container_name: bussines_logic_service
     ports:
       - "5000:5000"
     depends_on:
@@ -79,7 +92,8 @@ services:
       - supermarket_network
 
   database_api_service:
-    build: ./database-api-service/
+    image: thepushkin/database_api_service
+    container_name: database_api_service
     ports:
       - "5010:5010"
     depends_on:
@@ -115,9 +129,8 @@ services:
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
-      KONG_PORTAL: on  # Enable the Developer Portal if needed
-      KONG_ADMIN_GUI_URL: http://100.118.139.109:8002  # URL where Kong Manager will be accessible
-      # KONG_ADMIN_GUI_API_URL: http://100.118.139.109:8001  # URL where Kong Manager will be accessible
+      KONG_PORTAL: on
+      KONG_ADMIN_GUI_URL: http://100.118.139.109:8002
       KONG_ADMIN_GUI_LISTEN: '0.0.0.0:8002'
     depends_on:
       - kong-database
@@ -152,6 +165,7 @@ volumes:
   grafana-data:
   portainer-data:
   kong-db:
+  loki-data:
 
 networks:
   supermarket_network:
